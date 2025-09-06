@@ -57,9 +57,13 @@ const Header = () => {
             <motion.div
               whileHover={{ rotate: [0, -10, 10, 0] }}
               transition={{ duration: 0.5 }}
-              className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center"
+              className="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center"
             >
-              <Leaf className="w-6 h-6 text-white" />
+              <img 
+                src="/logo.jpg" 
+                alt="EcoFinds Logo" 
+                className="w-full h-full object-cover"
+              />
             </motion.div>
             <span className="text-2xl font-bold text-green-800 group-hover:text-green-600 transition-colors">
               EcoFinds

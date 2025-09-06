@@ -160,14 +160,7 @@ const LandingPage = () => {
                 >
                   Welcome Back
                 </Button>
-                <Button 
-                  variant="secondary" 
-                  size="lg" 
-                  className="text-lg px-8 bg-white text-green-600 hover:bg-green-50"
-                  onClick={() => navigate('/dashboard')}
-                >
-                  Browse Products
-                </Button>
+               
               </div>
 
               <div className="grid grid-cols-3 gap-6 pt-8">
@@ -228,49 +221,7 @@ const LandingPage = () => {
             </p>
           </div>
 
-          {loading ? (
-            <div className="text-center py-8">
-              <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
-              <p className="mt-4 text-gray-600">Loading categories...</p>
-            </div>
-          ) : (
-            <div className="flex flex-wrap justify-center gap-3 mb-12">
-              <Button
-                variant={selectedCategory === 'All' ? "default" : "outline"}
-                className={`
-                  flex items-center gap-2 transition-all duration-200
-                  ${selectedCategory === 'All' 
-                    ? 'bg-green-600 hover:bg-green-700 text-white' 
-                    : 'hover:bg-green-50 hover:text-green-700 hover:border-green-200'
-                  }
-                `}
-                onClick={() => setSelectedCategory('All')}
-              >
-                <Grid3X3 className="h-4 w-4" />
-                All Categories
-              </Button>
-              {hardcodedCategories.map((category) => {
-                const IconComponent = iconMap[category.icon] || Package; // Fallback to Package icon
-                return (
-                  <Button
-                    key={category.id}
-                    variant={selectedCategory === category.name ? "default" : "outline"}
-                    className={`
-                      flex items-center gap-2 transition-all duration-200
-                      ${selectedCategory === category.name 
-                        ? 'bg-green-600 hover:bg-green-700 text-white' 
-                        : 'hover:bg-green-50 hover:text-green-700 hover:border-green-200'
-                      }
-                    `}
-                    onClick={() => setSelectedCategory(category.name)}
-                  >
-                    <IconComponent className="h-4 w-4" />
-                    {category.name}
-                  </Button>
-                );
-              })}
-            </div>
-          )}
+        
 
           {loading ? (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
@@ -307,9 +258,7 @@ const LandingPage = () => {
                       <h3 className="font-semibold text-gray-900 group-hover:text-green-600 transition-colors">
                         {category.name}
                       </h3>
-                      <p className="text-sm text-gray-600 mt-1">
-                        Browse products
-                      </p>
+                      
                     </CardContent>
                   </Card>
                 );
@@ -319,56 +268,6 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* Featured Products */}
-      <section className="py-16 bg-gray-50">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center mb-12">
-            <div>
-              <h2 className="text-3xl font-bold text-gray-900 mb-4">Featured Second-Hand Products</h2>
-              <p className="text-lg text-gray-600">
-                Handpicked sustainable treasures for conscious shoppers
-              </p>
-            </div>
-            <Button 
-              variant="outline" 
-              className="hidden sm:flex items-center gap-2 border-green-600 text-green-600 hover:bg-green-600 hover:text-white"
-              onClick={() => navigate('/products')}
-            >
-              View All
-              <ArrowRight className="h-4 w-4" />
-            </Button>
-          </div>
-
-          {loading ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
-              {[...Array(8)].map((_, index) => (
-                <div key={index} className="bg-white rounded-lg p-4 shadow-sm animate-pulse">
-                  <div className="h-48 bg-gray-200 rounded-lg mb-4"></div>
-                  <div className="h-4 bg-gray-200 rounded mb-2"></div>
-                  <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
-              {filteredProducts.slice(0, 8).map((product) => (
-                <ProductCard key={product.id} product={product} />
-              ))}
-            </div>
-          )}
-
-          <div className="text-center sm:hidden">
-            <Button 
-              variant="outline" 
-              className="w-full border-green-600 text-green-600 hover:bg-green-600 hover:text-white"
-              onClick={() => navigate('/products')}
-            >
-              View All Products
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
-          </div>
-        </div>
-      </section>
 
       {/* Why Choose Us */}
       <section className="py-16 bg-white">

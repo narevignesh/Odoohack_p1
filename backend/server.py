@@ -323,6 +323,51 @@ async def get_user_products(user_id: str):
     products = await db.products.find({"seller_id": user_id}).sort("created_at", -1).to_list(1000)
     return [Product(**product) for product in products]
 
+@api_router.put("/products/{product_id}", response_model=Product)
+async def update_product(product_id: str, product_data: ProductCreate, current_user: User = Depends(get_current_user)):
+    # Check if product exists and belongs to current user
+    existing_product = await db.products.find_one({"id": product_id})
+    if not existing_product:
+        raise HTTPException(status_code=404, detail="Product not found")
+    
+    if existing_product["seller_id"] != current_user.id:
+        raise HTTPException(status_code=403, detail="Not authorized to update this product")
+    
+    # Update product data
+    update_data = product_data.dict()
+    update_data["updated_at"] = datetime.utcnow()
+    
+    # Update the product
+    await db.products.update_one({"id": product_id}, {"$set": update_data})
+    
+    # Get updated product
+    updated_product = await db.products.find_one({"id": product_id})
+    return Product(**updated_product)
+
+@api_router.delete("/products/{product_id}")
+async def delete_product(product_id: str, current_user: User = Depends(get_current_user)):
+    # Check if product exists and belongs to current user
+    existing_product = await db.products.find_one({"id": product_id})
+    if not existing_product:
+        raise HTTPException(status_code=404, detail="Product not found")
+    
+    if existing_product["seller_id"] != current_user.id:
+        raise HTTPException(status_code=403, detail="Not authorized to delete this product")
+    
+    # Delete the product
+    result = await db.products.delete_one({"id": product_id})
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Product not found")
+    
+    # Update category count
+    await db.categories.update_one(
+        {"id": existing_product["category"]},
+        {"$inc": {"product_count": -1}}
+    )
+    
+    return {"message": "Product deleted successfully"}
+
 # User Routes
 @api_router.get("/users/{user_id}", response_model=UserResponse)
 async def get_user(user_id: str):

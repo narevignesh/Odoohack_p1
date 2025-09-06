@@ -8,10 +8,12 @@ import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select';
 import { Badge } from '../../components/ui/badge';
+import { useToast } from '../../hooks/use-toast';
 import { Search, Plus, Filter, SlidersHorizontal } from 'lucide-react';
 
 const ProductFeed = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -20,16 +22,6 @@ const ProductFeed = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  // Hardcoded categories
-  const hardcodedCategories = [
-    { id: 'clothing', name: 'Clothing' },
-    { id: 'electronics', name: 'Electronics' },
-    { id: 'furniture', name: 'Furniture' },
-    { id: 'home', name: 'Home & Garden' },
-    { id: 'sports', name: 'Sports & Fitness' },
-    { id: 'books', name: 'Books' },
-    { id: 'other', name: 'Other' }
-  ];
 
   useEffect(() => {
     loadData();
@@ -73,6 +65,14 @@ const ProductFeed = () => {
       setProducts(productsData.products || []);
     } catch (error) {
       console.error('Error loading data:', error);
+      
+      // Show user-friendly error message
+      toast({
+        title: "Error Loading Data",
+        description: "Failed to load products and categories. Please try again later.",
+        variant: "destructive"
+      });
+      
       setProducts([]);
       setCategories([]);
     } finally {
@@ -91,6 +91,15 @@ const ProductFeed = () => {
       setProducts(response.products || []);
     } catch (error) {
       console.error('Error loading products:', error);
+      
+      // Show user-friendly error message
+      toast({
+        title: "Error Loading Products",
+        description: "Failed to load products. Please try again later.",
+        variant: "destructive"
+      });
+      
+      setProducts([]);
     }
   };
 
@@ -224,7 +233,7 @@ const ProductFeed = () => {
               ))}
             </div>
           ) : (
-            hardcodedCategories.map(category => (
+            categories.map(category => (
               <Badge
                 key={category.id}
                 variant={selectedCategory === category.id ? "default" : "outline"}

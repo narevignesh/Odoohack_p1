@@ -137,6 +137,19 @@ export const productsAPI = {
 
   async getUserProducts(userId) {
     return apiRequest(`/users/${userId}/products`);
+  },
+
+  async updateProduct(productId, productData) {
+    return apiRequest(`/products/${productId}`, {
+      method: 'PUT',
+      body: JSON.stringify(productData),
+    });
+  },
+
+  async deleteProduct(productId) {
+    return apiRequest(`/products/${productId}`, {
+      method: 'DELETE',
+    });
   }
 };
 

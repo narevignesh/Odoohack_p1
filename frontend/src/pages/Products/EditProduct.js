@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { productsAPI, categoriesAPI } from '../../services/api';
 import Header from '../../components/common/Header';
@@ -11,17 +11,20 @@ import { Textarea } from '../../components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
 import { useToast } from '../../hooks/use-toast';
-import { ArrowLeft, Upload, Plus, X } from 'lucide-react';
+import { ArrowLeft, Upload, Save, X } from 'lucide-react';
 
-const AddProduct = () => {
+const EditProduct = () => {
   const navigate = useNavigate();
+  const { productId } = useParams();
   const { user } = useAuth();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingProduct, setIsLoadingProduct] = useState(true);
   const [categoriesLoading, setCategoriesLoading] = useState(false);
   const [categories, setCategories] = useState([]);
   const [categoriesError, setCategoriesError] = useState(false);
   const [errors, setErrors] = useState({});
+  const [product, setProduct] = useState(null);
 
   const [formData, setFormData] = useState({
     title: '',
@@ -32,40 +35,41 @@ const AddProduct = () => {
     images: []
   });
 
-  // Load categories from API
+  // Load product and categories
   useEffect(() => {
-    loadCategories();
-  }, []);
+    loadData();
+  }, [productId]);
 
-  const loadCategories = async () => {
-    setCategoriesLoading(true);
-    setCategoriesError(false);
+  const loadData = async () => {
+    setIsLoadingProduct(true);
     try {
-      const categoriesData = await categoriesAPI.getCategories();
-      setCategories(categoriesData);
-    } catch (error) {
-      console.error('Error loading categories:', error);
-      setCategoriesError(true);
+      const [productData, categoriesData] = await Promise.all([
+        productsAPI.getProduct(productId),
+        categoriesAPI.getCategories()
+      ]);
       
-      // Show user-friendly error message
+      setProduct(productData);
+      setCategories(categoriesData);
+      
+      // Populate form with existing product data
+      setFormData({
+        title: productData.title || '',
+        description: productData.description || '',
+        price: productData.price?.toString() || '',
+        category: productData.category || '',
+        condition: productData.condition || 'good',
+        images: productData.images || []
+      });
+    } catch (error) {
+      console.error('Error loading data:', error);
       toast({
-        title: "Error Loading Categories",
-        description: "Failed to load categories. Using default categories.",
+        title: "Error",
+        description: "Failed to load product data",
         variant: "destructive"
       });
-      
-      // Fallback to hardcoded categories if API fails
-      setCategories([
-        { id: 'clothing', name: 'Clothing' },
-        { id: 'electronics', name: 'Electronics' },
-        { id: 'furniture', name: 'Furniture' },
-        { id: 'home', name: 'Home & Garden' },
-        { id: 'sports', name: 'Sports & Fitness' },
-        { id: 'books', name: 'Books' },
-        { id: 'other', name: 'Other' }
-      ]);
+      navigate('/my-listings');
     } finally {
-      setCategoriesLoading(false);
+      setIsLoadingProduct(false);
     }
   };
 
@@ -206,7 +210,7 @@ const AddProduct = () => {
     if (!user) {
       toast({
         title: "Authentication Required",
-        description: "Please log in to add a product",
+        description: "Please log in to edit a product",
         variant: "destructive"
       });
       navigate('/login');
@@ -229,19 +233,19 @@ const AddProduct = () => {
         location: user.location || null
       };
 
-      // Create product via API
-      const newProduct = await productsAPI.createProduct(productData);
+      // Update product via API
+      await productsAPI.updateProduct(productId, productData);
 
       toast({
-        title: "Product Listed Successfully!",
-        description: "Your product has been added to the marketplace",
+        title: "Product Updated Successfully!",
+        description: "Your product has been updated in the marketplace",
       });
 
       navigate('/my-listings');
     } catch (error) {
-      console.error('Error creating product:', error);
+      console.error('Error updating product:', error);
       
-      let errorMessage = "Failed to create product listing";
+      let errorMessage = "Failed to update product listing";
       
       if (error.response?.data?.detail) {
         // Handle structured error responses from backend
@@ -266,6 +270,39 @@ const AddProduct = () => {
     }
   };
 
+  if (isLoadingProduct) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Header />
+        <div className="container mx-auto px-4 py-8">
+          <div className="max-w-2xl mx-auto">
+            <div className="animate-pulse">
+              <div className="h-8 bg-gray-200 rounded mb-4"></div>
+              <div className="h-64 bg-gray-200 rounded"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!product) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Header />
+        <div className="container mx-auto px-4 py-8">
+          <div className="max-w-2xl mx-auto text-center">
+            <h1 className="text-2xl font-bold text-gray-900 mb-4">Product Not Found</h1>
+            <p className="text-gray-600 mb-6">The product you're looking for doesn't exist or you don't have permission to edit it.</p>
+            <Button onClick={() => navigate('/my-listings')}>
+              Back to My Listings
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
@@ -281,22 +318,22 @@ const AddProduct = () => {
           <div className="flex items-center mb-8">
             <Button
               variant="outline"
-              onClick={() => navigate(-1)}
+              onClick={() => navigate('/my-listings')}
               className="mr-4"
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back
             </Button>
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Add New Product</h1>
-              <p className="text-gray-600 mt-2">List your item on the sustainable marketplace</p>
+              <h1 className="text-3xl font-bold text-gray-900">Edit Product</h1>
+              <p className="text-gray-600 mt-2">Update your product listing</p>
             </div>
           </div>
 
           <Card className="border-green-100 shadow-lg">
             <CardHeader className="bg-gradient-to-r from-green-50 to-emerald-50">
               <CardTitle className="flex items-center space-x-2 text-green-800">
-                <Plus className="w-5 h-5" />
+                <Save className="w-5 h-5" />
                 <span>Product Details</span>
               </CardTitle>
             </CardHeader>
@@ -481,7 +518,7 @@ const AddProduct = () => {
                   <Button
                     type="button"
                     variant="outline"
-                    onClick={() => navigate(-1)}
+                    onClick={() => navigate('/my-listings')}
                     className="flex-1"
                   >
                     Cancel
@@ -498,7 +535,7 @@ const AddProduct = () => {
                         className="w-4 h-4 border-2 border-white border-t-transparent rounded-full"
                       />
                     ) : (
-                      'List Product'
+                      'Update Product'
                     )}
                   </Button>
                 </div>
@@ -511,4 +548,4 @@ const AddProduct = () => {
   );
 };
 
-export default AddProduct;
+export default EditProduct;

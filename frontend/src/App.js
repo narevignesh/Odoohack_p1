@@ -13,6 +13,7 @@ import UserDashboard from './pages/Dashboard/UserDashboard';
 import ProfilePage from './pages/Profile/ProfilePage';
 import ProductFeed from './pages/Products/ProductFeed';
 import AddProduct from './pages/Products/AddProduct';
+import EditProduct from './pages/Products/EditProduct';
 import ProductDetail from './pages/Products/ProductDetail';
 import MyListings from './pages/Products/MyListings';
 import CartPage from './pages/Cart/CartPage';
@@ -147,6 +148,14 @@ function AppRoutes() {
             <ProtectedRoute>
               <PageTransition>
                 <AddProduct />
+              </PageTransition>
+            </ProtectedRoute>
+          } />
+          
+          <Route path="/edit-product/:productId" element={
+            <ProtectedRoute>
+              <PageTransition>
+                <EditProduct />
               </PageTransition>
             </ProtectedRoute>
           } />

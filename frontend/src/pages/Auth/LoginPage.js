@@ -82,10 +82,6 @@ const LoginPage = () => {
     }
   };
 
-  const demoCredentials = [
-    { email: 'ecolover@example.com', label: 'Demo User 1' },
-    { email: 'greenwarrior@example.com', label: 'Demo User 2' }
-  ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-emerald-50 flex items-center justify-center p-4">
@@ -100,9 +96,13 @@ const LoginPage = () => {
           <motion.div
             whileHover={{ rotate: [0, -10, 10, 0] }}
             transition={{ duration: 0.5 }}
-            className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full mb-4"
+            className="inline-flex items-center justify-center w-16 h-16 rounded-full overflow-hidden mb-4 mx-auto"
           >
-            <Leaf className="w-8 h-8 text-white" />
+            <img 
+              src="/logo.jpg" 
+              alt="EcoFinds Logo" 
+              className="w-full h-full object-cover"
+            />
           </motion.div>
           <h1 className="text-3xl font-bold text-green-800">EcoFinds</h1>
           <p className="text-gray-600 mt-2">Welcome back to sustainable shopping</p>
@@ -177,22 +177,6 @@ const LoginPage = () => {
                 )}
               </div>
 
-              {/* Demo Credentials */}
-              <div className="bg-blue-50 p-3 rounded-lg">
-                <p className="text-sm text-blue-800 font-medium mb-2">Demo Credentials:</p>
-                <div className="space-y-1">
-                  {demoCredentials.map((cred, index) => (
-                    <button
-                      key={index}
-                      type="button"
-                      onClick={() => setFormData({ email: cred.email, password: 'password123' })}
-                      className="text-xs text-blue-600 hover:text-blue-800 hover:underline block"
-                    >
-                      {cred.label}: {cred.email} / password123
-                    </button>
-                  ))}
-                </div>
-              </div>
 
               {/* Submit Button */}
               <Button

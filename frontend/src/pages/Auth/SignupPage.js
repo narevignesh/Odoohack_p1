@@ -124,9 +124,13 @@ const SignupPage = () => {
           <motion.div
             whileHover={{ rotate: [0, -10, 10, 0] }}
             transition={{ duration: 0.5 }}
-            className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full mb-4"
+            className="inline-flex items-center justify-center w-16 h-16 rounded-full overflow-hidden mb-4 mx-auto"
           >
-            <Leaf className="w-8 h-8 text-white" />
+            <img 
+              src="/logo.jpg" 
+              alt="EcoFinds Logo" 
+              className="w-full h-full object-cover"
+            />
           </motion.div>
           <h1 className="text-3xl font-bold text-green-800">EcoFinds</h1>
           <p className="text-gray-600 mt-2">Join the sustainable shopping community</p>

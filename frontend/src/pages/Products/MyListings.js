@@ -56,11 +56,7 @@ const MyListings = () => {
   };
 
   const handleEdit = (product) => {
-    // In a real app, you'd navigate to an edit form
-    toast({
-      title: "Edit Product",
-      description: "Edit functionality will be available in the full version",
-    });
+    navigate(`/edit-product/${product.id}`);
   };
 
   const handleDelete = (product) => {
@@ -73,9 +69,8 @@ const MyListings = () => {
     setIsDeleting(true);
     
     try {
-      // TODO: Implement API delete endpoint
-      // For now, we'll just remove from local state
-      // In a real app, this would call: await productsAPI.deleteProduct(deleteDialog.product.id);
+      // Call API to delete product
+      await productsAPI.deleteProduct(deleteDialog.product.id);
       
       // Update local state
       setMyProducts(prev => prev.filter(p => p.id !== deleteDialog.product.id));
@@ -88,9 +83,15 @@ const MyListings = () => {
       setDeleteDialog({ open: false, product: null });
     } catch (error) {
       console.error('Error deleting product:', error);
+      
+      let errorMessage = "Failed to delete product";
+      if (error.message) {
+        errorMessage = error.message;
+      }
+      
       toast({
         title: "Error",
-        description: "Failed to delete product",
+        description: errorMessage,
         variant: "destructive"
       });
     } finally {
