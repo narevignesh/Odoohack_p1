@@ -1,13 +1,3 @@
----
-
-# EcoFinds — README
-
-**Project:** EcoFinds — Empowering Sustainable Consumption through a Second-hand Marketplace
-**Stack:** React (frontend) + FastAPI (backend, Python) + MongoDB Atlas + JWT authentication
-**Author:** Nare Vignesh (repo: `narevignesh/Odoohack_p1`)
-**Purpose:** Hackathon prototype — core authentication, product listing CRUD, browsing, filter/search, cart, previous purchases, user dashboard.
-
----
 
 ## 1. Project Summary (what & why)
 
