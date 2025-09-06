@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-// Note: Purchase functionality would need to be implemented with real API
 import Header from '../../components/common/Header';
 import { Button } from '../../components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
@@ -14,7 +13,6 @@ import {
   CreditCard, 
   Star, 
   Eye,
-  Download,
   Truck,
   CheckCircle,
   Clock
@@ -30,14 +28,10 @@ const PurchasesPage = () => {
   }, []);
 
   const loadPurchases = () => {
-    // Load purchases from localStorage
     const storedPurchases = JSON.parse(localStorage.getItem('user_purchases') || '[]');
-    
-    // Sort by purchase date (newest first)
-    const sortedPurchases = storedPurchases.sort((a, b) => 
-      new Date(b.purchaseDate) - new Date(a.purchaseDate)
+    const sortedPurchases = storedPurchases.sort(
+      (a, b) => new Date(b.purchaseDate) - new Date(a.purchaseDate)
     );
-    
     setPurchases(sortedPurchases);
   };
 
@@ -62,11 +56,6 @@ const PurchasesPage = () => {
 
   const handleViewProduct = (productId) => {
     navigate(`/product/${productId}`);
-  };
-
-  const handleReorder = (purchase) => {
-    // In a real app, this would add items back to cart
-    console.log('Reordering:', purchase);
   };
 
   const totalSpent = purchases.reduce((total, purchase) => total + purchase.totalAmount, 0);
@@ -219,21 +208,9 @@ const PurchasesPage = () => {
                               <Eye className="w-4 h-4 mr-2" />
                               View Details
                             </Button>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleReorder(purchase)}
-                            >
-                              <Package className="w-4 h-4 mr-2" />
-                              Reorder
-                            </Button>
                           </div>
 
                           <div className="flex space-x-2">
-                            <Button variant="outline" size="sm">
-                              <Download className="w-4 h-4 mr-2" />
-                              Receipt
-                            </Button>
                             {purchase.status === 'delivered' && (
                               <Button variant="outline" size="sm">
                                 <Star className="w-4 h-4 mr-2" />
@@ -274,7 +251,7 @@ const PurchasesPage = () => {
             </motion.div>
           )}
 
-          {/* Sustainability Impact (if there are purchases) */}
+          {/* Sustainability Impact */}
           {purchases.length > 0 && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}

@@ -46,15 +46,14 @@ const AddProduct = () => {
     } catch (error) {
       console.error('Error loading categories:', error);
       setCategoriesError(true);
-      
-      // Show user-friendly error message
+
       toast({
         title: "Error Loading Categories",
         description: "Failed to load categories. Using default categories.",
         variant: "destructive"
       });
-      
-      // Fallback to hardcoded categories if API fails
+
+      // Fallback categories
       setCategories([
         { id: 'clothing', name: 'Clothing' },
         { id: 'electronics', name: 'Electronics' },
@@ -118,8 +117,7 @@ const AddProduct = () => {
       ...prev,
       [name]: value
     }));
-    
-    // Clear error when user starts typing
+
     if (errors[name]) {
       setErrors(prev => ({
         ...prev,
@@ -133,7 +131,7 @@ const AddProduct = () => {
       ...prev,
       [name]: value
     }));
-    
+
     if (errors[name]) {
       setErrors(prev => ({
         ...prev,
@@ -142,12 +140,12 @@ const AddProduct = () => {
     }
   };
 
+  // ✅ fixed image upload without categoryImages
   const handleImageUpload = (e) => {
     const files = Array.from(e.target.files);
     const maxImages = 5;
-    
+
     if (files.length > 0) {
-      // Check if adding these files would exceed the limit
       if (formData.images.length + files.length > maxImages) {
         toast({
           title: "Too Many Images",
@@ -157,33 +155,16 @@ const AddProduct = () => {
         return;
       }
 
-      // For demo purposes, we'll use placeholder images
-      // In a real app, you'd upload to a service like Cloudinary or AWS S3
-      const categoryImages = {
-        clothing: 'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=400&h=300&fit=crop',
-        electronics: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400&h=300&fit=crop',
-        furniture: 'https://images.unsplash.com/photo-1506439773649-6e0eb8cfb237?w=400&h=300&fit=crop',
-        home: 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=400&h=300&fit=crop',
-        sports: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400&h=300&fit=crop',
-        books: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=300&fit=crop',
-        other: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop'
-      };
-      
-      // Use category-specific image or default
-      const selectedImage = categoryImages[formData.category] || categoryImages.other;
-      
-      // Add the image to the images array
       setFormData(prev => ({
         ...prev,
-        images: [...prev.images, selectedImage]
+        images: [...prev.images, ...files.map(file => URL.createObjectURL(file))]
       }));
-      
+
       toast({
         title: "Image Added",
         description: `${files.length} image(s) added to your product`,
       });
 
-      // Reset the file input
       e.target.value = '';
     }
   };
@@ -193,7 +174,7 @@ const AddProduct = () => {
       ...prev,
       images: prev.images.filter((_, index) => index !== indexToRemove)
     }));
-    
+
     toast({
       title: "Image Removed",
       description: "Image has been removed from your product",
@@ -202,7 +183,7 @@ const AddProduct = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!user) {
       toast({
         title: "Authentication Required",
@@ -212,25 +193,25 @@ const AddProduct = () => {
       navigate('/login');
       return;
     }
-    
+
     if (!validateForm()) return;
 
     setIsLoading(true);
-    
+
     try {
-      // Prepare product data for API
       const productData = {
         title: formData.title.trim(),
         description: formData.description.trim(),
         price: parseFloat(formData.price),
         category: formData.category,
         condition: formData.condition,
-        images: formData.images.length > 0 ? formData.images : [`https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop`],
+        images: formData.images.length > 0
+          ? formData.images
+          : [`https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop`],
         location: user.location || null
       };
 
-      // Create product via API
-      const newProduct = await productsAPI.createProduct(productData);
+      await productsAPI.createProduct(productData);
 
       toast({
         title: "Product Listed Successfully!",
@@ -240,11 +221,9 @@ const AddProduct = () => {
       navigate('/my-listings');
     } catch (error) {
       console.error('Error creating product:', error);
-      
+
       let errorMessage = "Failed to create product listing";
-      
       if (error.response?.data?.detail) {
-        // Handle structured error responses from backend
         if (Array.isArray(error.response.data.detail)) {
           errorMessage = error.response.data.detail.map(err => err.msg || err.message).join(', ');
         } else if (typeof error.response.data.detail === 'string') {
@@ -255,7 +234,7 @@ const AddProduct = () => {
       } else if (error.message) {
         errorMessage = error.message;
       }
-      
+
       toast({
         title: "Error",
         description: errorMessage,
@@ -269,7 +248,7 @@ const AddProduct = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
-      
+
       <div className="container mx-auto px-4 py-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -300,14 +279,12 @@ const AddProduct = () => {
                 <span>Product Details</span>
               </CardTitle>
             </CardHeader>
-            
+
             <CardContent className="p-6">
               <form onSubmit={handleSubmit} className="space-y-6">
-                {/* Product Image */}
+                {/* Product Images */}
                 <div className="space-y-2">
                   <Label className="text-gray-700 font-medium">Product Images</Label>
-                  
-                  {/* Upload Button */}
                   <div className="flex items-start space-x-4">
                     <label
                       htmlFor="product-image"
@@ -331,7 +308,6 @@ const AddProduct = () => {
                     </div>
                   </div>
 
-                  {/* Image Preview Grid */}
                   {formData.images.length > 0 && (
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mt-4">
                       {formData.images.map((image, index) => (
@@ -401,7 +377,7 @@ const AddProduct = () => {
                   )}
                 </div>
 
-                {/* Price and Category Row */}
+                {/* Price + Category */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="price" className="text-gray-700 font-medium">Price ($) *</Label>
@@ -476,7 +452,7 @@ const AddProduct = () => {
                   </Select>
                 </div>
 
-                {/* Submit Button */}
+                {/* Submit */}
                 <div className="flex space-x-3 pt-4">
                   <Button
                     type="button"
