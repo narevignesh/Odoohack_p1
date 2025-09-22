@@ -7,7 +7,7 @@ EcoFinds is a lightweight marketplace that helps people buy and sell pre-owned i
 
 ## 2. Key Features (MVP)
 
-* Email + password registration and login (JWT).
+* Email + password registration and login.
 * User profile (username, editable basic profile fields).
 * Product creation: title, description, category (predefined), price, at least one image placeholder.
 * Product CRUD for listing owners (create, read, update, delete).
