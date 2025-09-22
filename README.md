@@ -38,7 +38,6 @@ EcoFinds is a lightweight marketplace that helps people buy and sell pre-owned i
 * Pydantic for schemas.
 * Motor/PyMongo (MongoDB Atlas).
 * Passlib / bcrypt for password hashing.
-* PyJWT (or jose) for JWT.
 * CORS middleware.
 
 **Database**
