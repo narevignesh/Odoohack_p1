@@ -126,7 +126,7 @@ yarn start
 ### 🔹 Step 4: Test Flow
 
 1. Register a new account.
-2. Login to receive JWT.
+2. Login with credientials.
 3. Add a new product (title, category, description, price, image).
 4. View product feed, search, and filter.
 5. Add product to cart.
